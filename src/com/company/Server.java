@@ -12,13 +12,6 @@ import java.util.*;
 
 public class Server {
 
-    private static final String HTTP_RESPONSE = "HTTP/1.1 200 OK\r\n"
-            + "Date: "          + new Date().toString()     +"\r\n"
-            + "Server: "        + "Apache/2.0.52 (CentOS)"  +"\r\n"
-            + "Accept-Ranges: " + "bytes"                   +"\r\n"
-            + "Content-Length: "+ "%s"                      +"\r\n"
-            +"\r\n";
-
     public static void main(String[] args) {
 
 	    int PORT = 8080;
