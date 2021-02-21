@@ -251,7 +251,6 @@ public class HTTPRequest implements Runnable{
 
         // Send a blank line to indicate the end of the header lines
         this.dataOutputStream.writeBytes(CRLF);
-        //this.dataOutputStream.writeBytes(CRLF);
 
         // Send the file to the client
         sendBytes(fis);
