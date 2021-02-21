@@ -1,7 +1,13 @@
 package com.company;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.IIOByteBuffer;
+import javax.imageio.stream.ImageInputStream;
+import javax.xml.crypto.Data;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteOrder;
 import java.security.cert.CRL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -50,9 +56,9 @@ public class HTTPRequest implements Runnable{
         String entityBody       = null;
         StringTokenizer tokens  = null;
         FileInputStream fis     = null;
-        boolean fileExists      = true;
+        BufferedImage img       = null;
+        boolean fileExists      = false;
         boolean error301Exists  = false;
-
 
         try {
             // Get the request line of the client's request message
@@ -104,7 +110,6 @@ public class HTTPRequest implements Runnable{
             filename = "DNE";
         }
 
-
         // Construct status line for response header: if the file exists then 200 OK
         if (fileExists)
             statusLine = responseHeader + responseCode[0] + " OK";
@@ -122,7 +127,7 @@ public class HTTPRequest implements Runnable{
             // Determine the file contents
             contentType = String.format("Content-Type: %s", fileType(filename));
 
-            // Send the entity body. If the file exists send the file
+            // Send the appropriate response messages
             if (fileExists)
                 sendResponse(statusLine, contentType, filename, fis);
             else if (error301Exists)
@@ -162,20 +167,23 @@ public class HTTPRequest implements Runnable{
         return oldNewFileName.containsKey(filename);
     }
 
+
     /*
      * Name         : sendBytes
      * Parameters   : The fileInput is the inputStream to the file that was requested by the client and the output stream sends the file to the client's input
-     * Description  : Creates a 2k buffer and sends the copy requested file to the client's input stream using the output stream
+     * Description  : Creates a 6k buffer and sends the copy requested file to the client's input stream using the output stream
      * Returns      : void
      */
-    private static void sendBytes(FileInputStream fileInput, OutputStream os) throws Exception{
-        // Construct a 1k buffer to hold bytes on their way to the socket
-        byte[] buffer = new byte[2048];
+    private void sendBytes(FileInputStream fileInput) throws Exception{
+        // Construct a 6k buffer to hold bytes on their way to the socket
+        byte[] buffer = new byte[6144];
         int bytes = 0;
 
         // Copy requested file into the socket's output stream
-        while ((bytes = fileInput.read(buffer)) != -1)
-            os.write(buffer, 0, bytes);
+        while ((bytes = fileInput.read(buffer)) != -1) {
+            this.dataOutputStream.write(buffer, 0, bytes);
+            this.dataOutputStream.flush();
+        }
     }
 
 
@@ -189,11 +197,11 @@ public class HTTPRequest implements Runnable{
         if (filename.endsWith(".htm") || filename.endsWith(".html"))
             return "text/html";
 
-        else if (filename.endsWith(".jpg"))
-            return "text/jpg";
+        else if (filename.endsWith(".jpeg") || filename.endsWith(".jpg"))
+            return "image/jpeg";
 
         else if (filename.endsWith(".png"))
-            return "text/png";
+            return "image/png";
 
         else if (filename.endsWith(".css"))
             return "text/css";
@@ -243,10 +251,10 @@ public class HTTPRequest implements Runnable{
 
         // Send a blank line to indicate the end of the header lines
         this.dataOutputStream.writeBytes(CRLF);
-        this.dataOutputStream.writeBytes(CRLF);
+        //this.dataOutputStream.writeBytes(CRLF);
 
         // Send the file to the client
-        sendBytes(fis, this.dataOutputStream);
+        sendBytes(fis);
     }
 
 
@@ -284,7 +292,9 @@ public class HTTPRequest implements Runnable{
 
         // Send a blank line to indicate the end of the header lines
         this.dataOutputStream.writeBytes(CRLF);
-        this.dataOutputStream.writeBytes(CRLF);
+
+        // Ensure all data has been sent
+        this.dataOutputStream.flush();
     }
 
 
@@ -297,8 +307,8 @@ public class HTTPRequest implements Runnable{
     private void send404Response(String statusLine, String htmlErrorCode) throws IOException{
         // Send the status line
         System.out.println(statusLine);
-        dataOutputStream.writeBytes(statusLine);
-        dataOutputStream.writeBytes(CRLF);
+        this.dataOutputStream.writeBytes(statusLine);
+        this.dataOutputStream.writeBytes(CRLF);
 
         // Send the date the request was made
         System.out.println(String.format("Date: %s", this.date.toString()));
@@ -307,16 +317,15 @@ public class HTTPRequest implements Runnable{
 
         // Send the content line
         System.out.println("Content-Type: text/html");
-        dataOutputStream.writeBytes("Content-Type: text/html");
-        dataOutputStream.writeBytes(CRLF);
+        this.dataOutputStream.writeBytes("Content-Type: text/html");
+        this.dataOutputStream.writeBytes(CRLF);
 
         // Send a blank line to indicate the end of the header lines
-        dataOutputStream.writeBytes(CRLF);
-        dataOutputStream.writeBytes(CRLF);
+        this.dataOutputStream.writeBytes(CRLF);
 
         // Send the html error code
         System.out.println(htmlErrorCode);
-        dataOutputStream.writeBytes(htmlErrorCode);
+        this.dataOutputStream.writeBytes(htmlErrorCode);
     }
 
 }
