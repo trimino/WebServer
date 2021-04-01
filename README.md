@@ -13,10 +13,11 @@
 
 
 ## Compilation Instructions
-  git clone https:github.com/trimino/WebServer.git
-  cd WebServer/src
-  javac com/company/Server.java
-  java com.company.Server
+
+    git clone https:github.com/trimino/WebServer.git
+    cd WebServer/src
+    javac com/company/Server.java
+    java com.company.Server
  
 
 ## Running Program 
