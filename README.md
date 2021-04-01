@@ -30,3 +30,6 @@
  * For 404 Status Code open another tab and type anything after the '/': **http://localhost:8080/<type_anything> 
 * Note: This can all be down without closing any tabs (Multi-Threaded Behaviour)
   
+  
+  ## Assumptions
+  * RUN CODE IN TERMINAL AND NOT IN INTELLIJ IDE
