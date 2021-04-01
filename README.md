@@ -31,5 +31,5 @@
 * Note: This can all be down without closing any tabs (Multi-Threaded Behaviour)
   
   
-  ## Assumptions
-  * RUN CODE IN TERMINAL AND NOT IN INTELLIJ IDE
+## Assumptions
+* RUN CODE IN TERMINAL AND NOT IN INTELLIJ IDE
