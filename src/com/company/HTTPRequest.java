@@ -88,9 +88,9 @@ public class HTTPRequest implements Runnable{
                 if (!error301Exists) {
                     // Determine the OS and find the working directory and the index.html file
                     if (os.equals("Linux"))
-                        filename = String.format("%s/src/com/company%s", workDir, filename301);
+                        filename = String.format("%s/com/company/%s", workDir, filename301);
                     else
-                        filename = String.format("%s\\src\\com\\company\\%s", workDir, filename301.substring(1));
+                        filename = String.format("%s\\com\\company\\%s", workDir, filename301.substring(1));
 
                     // Open the requested file
                     fis = new FileInputStream(filename);
