@@ -1,4 +1,3 @@
-# Web Server
 
 **Web Server** is a multi-threaded we server, capable of serving multiple requests in parallel.
 
